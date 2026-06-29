@@ -11,11 +11,11 @@
 
 | Nom / Prénom | Classe | Rôle |
 |---|---|---|
-| Stoffelbach Théo | [Classe] | Chef de projet / coordination |
-| Remery Lucas | [Classe] | Rétro-ingénierie fonctionnelle |
-| Detres Florent | [Classe] | Recherche documentaire |
-| Breton Swann | [Classe] | Développement POC |
-| Abadie Thomas | [Classe] | Documentation / rendu |
+| Stoffelbach Théo | M1 Dev Fullstack | Chef de projet / coordination |
+| Remery Lucas | M1 Dev Fullstack | Rétro-ingénierie fonctionnelle |
+| Detres Florent | M1 Dev Fullstack | Recherche documentaire |
+| Breton Swann | M1 Dev Fullstack | Développement POC |
+| Abadie Thomas | M1 Dev Fullstack | Documentation / rendu |
 
 ---
 
@@ -295,7 +295,7 @@ def mesurer_profondeur_mm(profil_px, mm_par_px):
 
 ### 8.4 Résultat d'exécution
 
-Faute de photo réelle le jour de la rédaction, le POC génère des **images de test** (ligne laser + rainure de profondeur connue) pour valider la chaîne de bout en bout. Exemple d'image générée (cas « à surveiller ») :
+En l'absence de photo réelle, le POC génère des **images de test** (ligne laser + rainure de profondeur connue) pour valider la chaîne de bout en bout. Exemple d'image générée (cas « à surveiller ») :
 
 ![Ligne laser sur une rainure (image de test)](rebike-poc/images/synth_surveiller.png)
 
