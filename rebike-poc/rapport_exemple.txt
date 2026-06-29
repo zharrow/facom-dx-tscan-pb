@@ -1,0 +1,23 @@
+Rapport FACOM ReBike
+Objet controle   : pneu de velo - rainure profonde
+Profondeur mesuree : 3.50 mm
+Etat             : CONFORME
+Indicateur       : Vert
+Recommandation   : Le pneu peut continuer a etre utilise.
+Operateur        : [Nom]    Date : [Date]
+
+Rapport FACOM ReBike
+Objet controle   : pneu de velo - rainure moyenne
+Profondeur mesuree : 2.40 mm
+Etat             : A SURVEILLER
+Indicateur       : Orange
+Recommandation   : Le pneu reste utilisable mais doit etre recontrole prochainement.
+Operateur        : [Nom]    Date : [Date]
+
+Rapport FACOM ReBike
+Objet controle   : pneu de trottinette - rainure faible
+Profondeur mesuree : 1.20 mm
+Etat             : A REMPLACER
+Indicateur       : Rouge
+Recommandation   : Usure trop importante : remplacer le pneu (securite).
+Operateur        : [Nom]    Date : [Date]
