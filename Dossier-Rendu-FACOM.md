@@ -16,6 +16,7 @@
 | Detres Florent | M1 Dev Fullstack | Recherche documentaire |
 | Breton Swann | M1 Dev Fullstack | Développement POC |
 | Abadie Thomas | M1 Dev Fullstack | Documentation / rendu |
+| Bernard Julien | M1 Dev Fullstack | Tests & validation du POC |
 
 ---
 

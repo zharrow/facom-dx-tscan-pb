@@ -6,7 +6,7 @@ Dossier de proposition à la Direction RSE de FACOM, réalisé dans le cadre du 
 National Informatique Ynov.
 
 **Équipe (M1 Dev Fullstack — Toulouse Ynov Campus) :** Stoffelbach Théo · Remery Lucas ·
-Detres Florent · Breton Swann · Abadie Thomas.
+Detres Florent · Breton Swann · Abadie Thomas · Bernard Julien.
 
 ---
 
