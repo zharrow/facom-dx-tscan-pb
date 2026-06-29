@@ -486,3 +486,99 @@ La recherche en ligne établit de façon convergente que le **FACOM SCANDIAG DX.
 - [App « Facom – SCANDIAG » (Google Play)](https://play.google.com/store/apps/details?id=com.facom.scandiag)
 - [Datasheet FACOM (RS Components, PDF)](https://docs.rs-online.com/368c/A700000008382437.pdf)
 - [TEXA S.p.A. — dépôts FCC (grantee T8R)](https://fccid.io/T8R)
+
+---
+
+# Annexe B — Teardown : nomenclature VÉRIFIÉE (photos `images_facom/interieur/`)
+
+> ✅ L'appareil a été ouvert et photographié. Les sérigraphies sont lisibles : on passe
+> des **hypothèses** (Annexe A) aux **faits**. Bilan : les hypothèses majeures étaient bonnes
+> (STM32F4, OV9712, liaison série/SPP), avec deux belles surprises (module BT **Bluegiga WT12**
+> et **pont USB-série FTDI**).
+
+## B.1 Nomenclature confirmée (BOM)
+
+| Fonction | Référence **relevée** | Détails | Photo |
+|---|---|---|---|
+| **MCU** | **STMicroelectronics STM32F429** (`STM32F429 NIH6`) | ARM Cortex-M4 @180 MHz, **DCMI** (caméra), **FMC** (SDRAM), USB OTG, jusqu'à 2 Mo flash interne | IMG_9638/9639 |
+| **SDRAM** | **ISSI IS42S16400J-6BLI** | **64 Mbit (8 Mo)**, SDR, buffer d'image (via FMC) | IMG_9638/9639 |
+| **Mémoire ext.** | *non identifiée* (`9CA15 / RB151`, logo en vague) | grand boîtier près de la SDRAM → **probable flash NAND/NOR** (stockage firmware/calibration) | IMG_9639 |
+| **Caméra** | **OmniVision OV9712** (module `JAL-KM1-OV9712 V4.0`) | CMOS **WXGA 1280×800, 1 Mpx**, sortie **DVP** + config **SCCB/I²C**, sur **nappe FFC** | IMG_9642 |
+| **Bluetooth** | **Bluegiga / Silicon Labs WT12-A** (`FCC ID QOQWT12A`) | **BT 2.1 Classic**, firmware **iWRAP** (AT-commands) → **SPP sur UART**, défaut **115200 8N1** | IMG_9644/9645 |
+| **USB ↔ UART** | **FTDI FT232RQ** (`FT232RQ 1650-C`) | pont USB-série (QFN) → le **port USB Mini-B porte des données**, pas que la charge | IMG_9645 |
+| **Batterie** | **EEMB LP602248** | LiPo **3,7 V / 620 mAh / 2,3 Wh**, connecteur **JST 2 pts** | IMG_9646 |
+| **Laser** | module diode cylindrique **vert** + lentille de ligne | **≤5 mW, 510–530 nm, classe 3R**, impulsion 10 ms, connecteur **JST 3 pts** (alim/masse/enable) | IMG_104207 / étiquette IMG_103309 |
+| **Driver/régul.** | **ON Semiconductor** `RM R934` (+ autres SOT) | près du bloc laser/caméra → régulateur/load-switch ou driver | IMG_9641 |
+| **Entrée alim** | USB Mini-B **5 V / 500 mA** | charge + données | étiquette IMG_103309 |
+| **Connecteurs** | USB Mini-B · FFC caméra · 2× JST (batterie, laser) | — | plusieurs |
+| **IHM** | bouton, LED RGB, buzzer | sur GPIO du STM32 | — |
+| **PCB** | réf. `3909305 / PC524-E`, date `19.19` | fab. semaine 19 / 2019 | IMG_9640 |
+
+## B.2 Hypothèses (Annexe A) vs réalité
+
+| Composant | Hypothèse | Réalité | Verdict |
+|---|---|---|---|
+| MCU | STM32F4 (DCMI) | **STM32F429** | ✅ exact |
+| Caméra | OV9712 / OV9281 | **OV9712** | ✅ exact |
+| Liaison BT | « port série/SPP » | **WT12 iWRAP = SPP/UART** | ✅ exact |
+| Module BT (réf.) | RN4678 / u-blox | **Bluegiga WT12-A** | ➡️ autre réf., même principe |
+| Mémoire | flash SPI Winbond | **SDRAM ISSI** + flash ext. non identifiée | ➡️ SDRAM en plus (buffer image) |
+| USB | « data routées ? » | **oui — FTDI FT232RQ** | 🎁 surprise (accès série filaire) |
+| Batterie | LiPo 3,7 V/620 mAh | **EEMB LP602248** idem | ✅ exact |
+
+## B.3 Conséquences (très favorables au concept C7 et au POC)
+
+1. **Deux voies de communication, toutes deux en série :**
+   - **USB filaire** via **FT232RQ** → port COM standard, **sans appairage** (le plus fiable pour les TP).
+   - **Bluetooth** via **WT12** → SPP, **115200 8N1** (le défaut de [`poc/scandiag_client.py`](poc/scandiag_client.py) était donc juste ✅).
+2. **Tout est documenté publiquement** : datasheets **STM32F429**, **OV9712**, **ISSI SDRAM**, **FT232RQ**, et surtout le **WT12 + guide iWRAP** (commandes AT). Idéal pédagogiquement.
+3. **Le STM32F429, c'est quasi une carte de dev** (caméra + SDRAM + USB + BT + batterie) : **reflashable** via **SWD** (chercher SWDIO/SWCLK/NRST — pads `SDBT`/test points à tracer, IMG_9640) **ou** via le **bootloader série** ST (UART + BOOT0), accessible par le **FT232RQ**. → Le Palier 2 (firmware custom) devient réaliste.
+4. **Chaîne de mesure claire** : `OV9712 → DCMI → STM32F429 (traitement, buffer SDRAM) → UART → WT12/FT232 → PC`. Le laser est piloté en tout-ou-rien (GPIO/driver) sur 3 fils.
+
+## B.4 Schéma fonctionnel — version vérifiée
+
+```mermaid
+flowchart TB
+    subgraph ALIM["⚡ Alimentation"]
+        USB["USB Mini-B 5V/500mA"] --> CHG["Charge LiPo + régulateurs"]
+        CHG --> BAT["EEMB LP602248<br/>LiPo 3,7V / 620 mAh"] --> RAIL["Rails 3,3V / caméra"]
+    end
+    subgraph CORE["🧠 Cœur"]
+        MCU["STM32F429<br/>Cortex-M4 · DCMI · FMC"]
+        SDR["SDRAM ISSI<br/>IS42S16400J (8 Mo)"]
+        FLASH["Flash ext. (9CA15/RB151)<br/>à confirmer"]
+        MCU <-->|FMC| SDR
+        MCU <-->|SPI?| FLASH
+    end
+    subgraph MESURE["🎯 Mesure"]
+        CAM["Caméra OV9712<br/>(module FFC)"]
+        LASER["Laser vert 510–530 nm<br/>classe 3R (JST 3 pts)"]
+    end
+    subgraph COMM["📡 Communication (2 voies série)"]
+        WT12["Bluetooth WT12-A<br/>iWRAP / SPP"]
+        FTDI["FTDI FT232RQ<br/>USB↔UART"]
+    end
+    subgraph UI["💡 IHM"]
+        BTN["Bouton"]; LED["LED RGB"]; BUZ["Buzzer"]
+    end
+    RAIL --> MCU & CAM & LASER
+    CAM -->|"DVP + I²C (SCCB)"| MCU
+    MCU -->|GPIO/driver| LASER
+    MCU <-->|UART1| WT12 --> BTAIR(("Bluetooth SPP"))
+    MCU <-->|UART2| FTDI --> USB
+    MCU --> LED & BUZ
+    BTN --> MCU
+    BTAIR -. "115200 8N1" .- PC["💻 PC / app"]
+    USB -. "port COM filaire" .- PC
+```
+
+## B.5 Datasheets à archiver (références réelles → `/datasheets/`)
+- `MCU_STM32F429.pdf` (STMicroelectronics)
+- `SDRAM_ISSI_IS42S16400J.pdf`
+- `CAM_OmniVision_OV9712.pdf`
+- `BT_SiliconLabs_Bluegiga_WT12.pdf` **+** `BT_iWRAP_User_Guide.pdf`
+- `USB_FTDI_FT232RQ.pdf`
+- `BAT_EEMB_LP602248.pdf`
+- *(à confirmer)* flash externe `9CA15/RB151`, ON Semi `RM R934`
+
+> Reste à faire à l'ouverture : tracer les **test points SWD** (pads `SDBT` ?) et identifier les deux puces restantes (`9CA15/RB151`, `ON RM R934`) à la loupe.

@@ -1,18 +1,23 @@
 # Datasheets des composants clés
 
-Déposer ici les **datasheets officielles** (PDF) des composants relevés à l'ouverture du SCANDIAG.
-Nommage conseillé : `FONCTION_REFERENCE.pdf` (ex. `MCU_STM32F407VGT6.pdf`).
+Composants **identifiés au teardown** (photos `images_facom/interieur/`). Déposer ici les
+**datasheets officielles** (PDF). Nommage : `FONCTION_REFERENCE.pdf`.
 
-## À collecter le jour J (après relevé des sérigraphies)
+## À télécharger (références vérifiées)
 
-- [ ] **MCU principal** — réf. réelle (hypothèse : STM32F4 + interface caméra DCMI)
-- [ ] **Capteur caméra CMOS** — réf. réelle (hypothèse : OmniVision OV9712 / OV9281 / AR0144)
-- [ ] **Module Bluetooth** — réf. réelle (hypothèse : Microchip RN4678 / u-blox / BlueGiga)
-- [ ] **Diode laser** verte 510–530 nm + **driver laser**
-- [ ] **Chargeur Li-ion** (hypothèse : MCP73831 / BQ2407x / TP4056)
-- [ ] **Régulateurs / LDO** (rails 3,3 V + rails caméra 2,8 / 1,8 / 1,5 V)
-- [ ] **Mémoire flash SPI** (hypothèse : Winbond W25Qxx)
-- [ ] **Buzzer**, **LED RGB**, autres composants notables (IMU éventuel)
+- [ ] **MCU** — `MCU_STM32F429.pdf` — STMicroelectronics STM32F429 (Cortex-M4, DCMI, FMC)
+- [ ] **SDRAM** — `SDRAM_ISSI_IS42S16400J.pdf` — ISSI IS42S16400J-6BLI (64 Mbit)
+- [ ] **Caméra** — `CAM_OmniVision_OV9712.pdf` — module `JAL-KM1-OV9712 V4.0` (WXGA 1 Mpx)
+- [ ] **Bluetooth** — `BT_Bluegiga_WT12.pdf` — Silicon Labs / Bluegiga WT12-A (BT 2.1, SPP)
+- [ ] **Bluetooth (firmware)** — `BT_iWRAP_User_Guide.pdf` — guide des commandes iWRAP
+- [ ] **USB↔série** — `USB_FTDI_FT232RQ.pdf` — FTDI FT232RQ
+- [ ] **Batterie** — `BAT_EEMB_LP602248.pdf` — EEMB LP602248 (LiPo 3,7 V / 620 mAh)
+- [ ] **Laser** — fiche/IEC du module laser vert 510–530 nm classe 3R (IEC 60825-1:2014)
 
-> Procédure : relever la sérigraphie (loupe/macro) → chercher la datasheet sur le site
-> du fabricant → enregistrer ici → mettre à jour le tableau §4 du `DOSSIER_FINAL_FACOM.md`.
+## À identifier (loupe) puis ajouter
+- [ ] Mémoire externe `9CA15 / RB151` (logo en vague) — probable flash NAND/NOR
+- [ ] `ON RM R934` (ON Semiconductor) — régulateur / load-switch / driver
+- [ ] Régulateurs / LDO secondaires (rails caméra 2,8 / 1,8 / 1,5 V)
+
+> Procédure : relever la sérigraphie → datasheet sur le site fabricant → enregistrer ici →
+> tableau §4 du `DOSSIER_FINAL_FACOM.md` et Annexe B du `concours_natio_flo.md` déjà à jour.

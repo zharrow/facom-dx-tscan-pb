@@ -121,20 +121,22 @@ flowchart TB
 
 ## 4. Composants clés & datasheets
 
-> Le MCU et les références exactes ne figurent pas dans la notice : ils seront **relevés à l'ouverture** (sérigraphies) et les **datasheets officielles archivées dans `/datasheets/`**. Le tableau ci-dessous donne nos **hypothèses raisonnées** (recherche en ligne) — confiance 🟢 probable · 🟡 plausible · ⚪ à investiguer.
+> ✅ **Appareil ouvert** : références relevées sur photos (`images_facom/interieur/`). Datasheets à archiver dans `/datasheets/`.
 
-| Composant | Candidat probable | Conf. | Datasheet (à archiver) |
-|---|---|:--:|---|
-| MCU principal | STM32F4 (interface caméra DCMI) | 🟢 | `/datasheets/[ref].pdf` |
-| Capteur caméra | OmniVision OV9712 (ou OV9281/AR0144 mono) | 🟡 | `/datasheets/…` |
-| Module Bluetooth | Microchip RN4678 (SPP+BLE) ou u-blox/BlueGiga | 🟡 | `/datasheets/…` |
-| Diode laser + driver | verte ~515–520 nm + driver courant constant | 🟢 | `/datasheets/…` |
-| Chargeur Li-ion | MCP73831 / BQ2407x / TP4056 | 🟡 | `/datasheets/…` |
-| Régulateurs | LDO 3,3 V + rails caméra (2,8/1,8/1,5 V) | 🟢 | `/datasheets/…` |
-| Mémoire flash | NOR SPI Winbond W25Qxx | 🟡 | `/datasheets/…` |
-| Buzzer / LED RGB / bouton | piézo + RGB sur GPIO | 🟢 | — |
+| Composant | Référence **vérifiée** | Détails |
+|---|---|---|
+| **MCU** | **STMicroelectronics STM32F429** | ARM Cortex-M4 @180 MHz, interface caméra **DCMI**, contrôleur **FMC** (SDRAM) |
+| **SDRAM** | **ISSI IS42S16400J-6BLI** | 64 Mbit (8 Mo) — buffer d'image |
+| **Caméra** | **OmniVision OV9712** (module `JAL-KM1-OV9712`) | CMOS WXGA 1280×800, 1 Mpx, sortie DVP + I²C, sur nappe FFC |
+| **Bluetooth** | **Bluegiga / Silicon Labs WT12-A** | BT 2.1 Classic, firmware **iWRAP** → **SPP sur UART** (115200 8N1) |
+| **USB ↔ série** | **FTDI FT232RQ** | pont USB-UART → le port USB porte **des données** (voie de comm/flash filaire) |
+| **Batterie** | **EEMB LP602248** | LiPo 3,7 V / 620 mAh / 2,3 Wh |
+| **Laser** | module diode **verte** + lentille de ligne | ≤5 mW, 510–530 nm, **classe 3R**, JST 3 pts |
+| **Driver / régul.** | **ON Semiconductor** `RM R934` (+ régulateurs) | à confirmer (loupe) |
+| **Mémoire ext.** | non identifiée (`9CA15 / RB151`) | probable flash NAND/NOR — à confirmer |
+| **IHM** | bouton + LED RGB + buzzer | sur GPIO du STM32 |
 
-*Justification détaillée : `concours_natio_flo.md` Annexe A.*
+*Comparaison hypothèses/réalité, schéma vérifié et implications : `concours_natio_flo.md` Annexe B.*
 
 ---
 
@@ -180,6 +182,8 @@ flowchart TB
 **Stratégie en 2 paliers :**
 1. **Palier 1 — sans reflash (sûr)** : l'outil expose sa liaison Bluetooth comme **port série** → on **rétro-conçoit le protocole** et on écrit un client ouvert.
 2. **Palier 2 — firmware ouvert (stretch)** : si un point de flash est accessible, firmware minimal pilotant LED/laser/buzzer/caméra (backup du firmware d'origine au préalable).
+
+> ✅ **Le teardown dé-risque fortement le POC** : (1) l'outil offre **deux voies série** — Bluetooth (WT12 iWRAP, SPP 115200) **et USB filaire** (FTDI FT232RQ, sans appairage) ; (2) tous les composants sont **documentés publiquement** (STM32F429, OV9712, WT12/iWRAP, FT232RQ) ; (3) le **STM32F429 est reflashable** (SWD, ou bootloader série ST via le FT232 + BOOT0), ce qui rend le **Palier 2 réaliste**. Détails : `concours_natio_flo.md` Annexe B.
 
 **Programmes fournis :**
 - [`poc/scandiag_client.py`](poc/scandiag_client.py) — client/explorateur série (modes `ports`, `monitor`, `repl`, `replay`) pour capturer et rétro-concevoir le protocole. *Testé : syntaxe OK, CLI fonctionnelle.*
