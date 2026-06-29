@@ -30,7 +30,7 @@ Le produit n'étant plus commercialisé, nous proposons de **conserver son archi
 
 Taux de réemploi estimé : **~85 %**. Double gain RSE : on évite la mise au rebut du SCANDIAG®, et on prolonge la durée de vie des objets qu'il contrôle.
 
-> **Note de méthode :** nous avons fait le choix de **ne pas ouvrir le produit**. L'approche de réemploi retenue (POC « niveau A », par vision) reproduit la chaîne de mesure **côté logiciel, sans toucher au firmware** : l'ouverture n'est donc pas nécessaire pour la démonstration. Le dossier distingue ce qui est **vérifié** (notice constructeur + observation du kit) de ce qui ne serait accessible qu'après démontage (références exactes des puces) — ce dernier point étant hors périmètre du concept choisi.
+> **Note de méthode :** nous avons **ouvert le produit** et relevé les références réelles de ses composants (§3.2, Annexe 2). Le POC retenu (« niveau A », par vision) reste **indépendant du firmware** — il reproduit la chaîne de mesure côté logiciel — mais le démontage nous permet (1) d'**identifier l'électronique** comme l'exige le sujet, (2) de **joindre les datasheets** des composants clés, et (3) d'ouvrir une voie de POC matériel (niveau B/C, §8.2). Le dossier distingue ce qui est **vérifié sur la carte** (références sérigraphiées) de ce qui reste à confirmer (deux puces secondaires, points de flash).
 
 ---
 
@@ -72,7 +72,7 @@ Le kit se présente dans une mallette rigide FACOM. Référence produit relevée
 | Humidité | 10 – 80 %, sans condensation |
 | Poids | 90 g (outil), 10 g (adaptateur) |
 
-> ⚠️ La notice contient une ligne OCR ambiguë (« Longueur d'onde m/s 10 »), probablement une **vitesse ou durée de balayage de ~10 ms/(m·s)**. Nous ne l'affirmons pas faute de source fiable — à confirmer dans la documentation FACOM officielle.
+> ✅ La ligne OCR ambiguë de la notice (« m/s 10 ») est en fait la **durée d'impulsion du laser : 10 ms**, confirmée par l'**étiquette du boîtier** (« pulse duration = 10 ms », norme IEC 60825-1:2014).
 
 ---
 
@@ -92,36 +92,45 @@ Le kit se présente dans une mallette rigide FACOM. Référence produit relevée
 | 8 / 9 | Câble / chargeur USB | Alimentation |
 | 14 | Code date | Année de fabrication |
 
-### 3.2 Fonctions internes (déduites de la notice, sans ouverture)
+### 3.2 Composants internes (relevés après ouverture)
 
-**Choix assumé : nous n'ouvrons pas le produit.** La rétro-ingénierie est ici **fonctionnelle** : on identifie les blocs et leur rôle à partir de la notice et du comportement de l'outil, sans relever les références physiques des puces. Ce niveau est **suffisant pour le concept retenu** (réemploi par vision, sans firmware — cf. §8).
+Nous avons **ouvert l'appareil** et photographié la carte (photos dans `images_facom/interieur/`). Les sérigraphies étant lisibles, la rétro-ingénierie passe du **fonctionnel** au **factuel** : voici les références réellement identifiées.
 
-| Bloc fonctionnel | Rôle déduit | Source |
-|---|---|---|
-| MCU / SoC | Pilotage, acquisition, gestion Bluetooth | Comportement + IHM |
-| Module Bluetooth | Liaison sans fil avec le logiciel SCANDIAG | Notice (2400–2483,5 MHz) |
-| Capteur caméra CMOS | Acquisition de l'image laser | Notice (CMOS WXGA 1 MP, 30 fps) |
-| Driver + diode laser | Projection ligne 510–530 nm, classe 3R | Notice |
-| Batterie + circuit de charge | Autonomie, recharge via USB 5 V | Notice (Li-Ion 3,7 V) |
-| Régulation / DC-DC | Conversion d'alimentation interne | Architecture standard |
-| IHM (bouton + LED RVB) | Commande et retour d'état | Notice + photo (bouton MEASURE) |
+| Fonction | Référence **vérifiée** | Détails | Photo |
+|---|---|---|---|
+| **MCU** | STMicroelectronics **STM32F429** | ARM Cortex-M4 @180 MHz, interface caméra **DCMI**, contrôleur mémoire **FMC** | IMG_9638/9639 |
+| **SDRAM** | ISSI **IS42S16400J-6BLI** | 64 Mbit (8 Mo) — buffer d'image (traitement embarqué) | IMG_9638/9639 |
+| **Caméra** | OmniVision **OV9712** (module `JAL-KM1-OV9712 V4.0`) | CMOS WXGA 1280×800, 1 Mpx, sortie DVP + I²C (SCCB), sur nappe FFC | IMG_9642 |
+| **Bluetooth** | Bluegiga / Silicon Labs **WT12-A** (`FCC ID QOQWT12A`) | BT 2.1 Classic, firmware **iWRAP** → profil série **SPP** sur UART (115200 8N1) | IMG_9644/9645 |
+| **USB ↔ série** | FTDI **FT232RQ** | pont USB-UART : le port USB Mini-B porte **des données** (pas que la charge) | IMG_9645 |
+| **Batterie** | EEMB **LP602248** | LiPo 3,7 V / 620 mAh / 2,3 Wh, connecteur JST 2 pts | IMG_9646 |
+| **Laser** | module diode **verte** + lentille de ligne | ≤5 mW, 510–530 nm, classe 3R, connecteur JST 3 pts (alim/masse/enable) | IMG_104207 |
+| **Driver / régul.** | ON Semiconductor `RM R934` (+ régulateurs) | près du bloc laser/caméra — fonction à confirmer (loupe) | IMG_9641 |
+| **Mémoire ext.** | *non identifiée* (`9CA15 / RB151`) | grand boîtier près de la SDRAM → probable flash NAND/NOR | IMG_9639 |
+| **PCB** | réf. `3909305 / PC524-E`, date `19.19` | fabrication semaine 19 / 2019 | IMG_9640 |
 
-> **Si une ouverture devait avoir lieu plus tard** (hors périmètre de ce rendu), il faudrait relever les références sérigraphiées sur la carte (recto/verso, lumière rasante), télécharger les datasheets correspondantes, et chercher d'éventuels points UART/SWD/JTAG pour évaluer la faisabilité d'un firmware alternatif. Cela reste une **piste d'extension** (niveau C, §8.2), pas un prérequis.
+**Ce que cela confirme et débloque :**
+- La **liaison « Bluetooth » est en fait du série** (SPP via le module WT12) — et il existe **en plus** une voie **USB-série filaire** (FT232RQ), sans appairage. Deux portes d'entrée pour dialoguer avec l'outil.
+- Le **STM32F429 est un MCU grand public très documenté** (caméra + SDRAM + USB), **reflashable** via **SWD** ou via le **bootloader série** ST (UART + BOOT0, accessible par le FT232). Le firmware alternatif (niveau C) devient donc **réaliste**, plus seulement théorique.
+- Tous les composants principaux ont une **datasheet publique** → livrable « datasheets » couvert (Annexe 2).
 
 ### 3.3 Schéma fonctionnel du produit
 
 ```mermaid
 flowchart LR
-  USB[USB Mini-B 5V] --> CHG[Charge Li-Ion]
-  CHG --> BAT[Batterie 3,7V]
+  USB[USB Mini-B 5V] --> CHG[Charge LiPo]
+  CHG --> BAT[Batterie EEMB 3,7V/620mAh]
   BAT --> PWR[Régulation / DC-DC]
-  PWR --> MCU[MCU principal]
+  PWR --> MCU[STM32F429 Cortex-M4]
+  MCU <--> SDR[SDRAM ISSI 8 Mo]
   BTN[Bouton multifonction] --> MCU
   MCU --> LED[LED RVB]
-  MCU --> DRV[Driver laser] --> LASER[Diode laser 510-530 nm]
-  CAM[Capteur CMOS 1 MP] --> MCU
-  MCU <--> BT[Module Bluetooth]
+  MCU --> DRV[Driver laser] --> LASER[Diode laser verte 510-530 nm 3R]
+  CAM[Caméra OV9712 - DVP/I2C] --> MCU
+  MCU <-->|UART| BT[Bluetooth WT12 - SPP]
+  MCU <-->|UART| FTDI[FTDI FT232RQ - USB]
   BT -. sans fil .-> PC[Logiciel SCANDIAG / PC]
+  FTDI -. USB filaire .-> PC
 ```
 
 ### 3.4 Chaîne de mesure : la triangulation laser
@@ -253,13 +262,13 @@ Démontrer qu'à partir d'une image de **ligne laser projetée sur une rainure d
 
 ### 8.2 Trois niveaux de POC (selon l'accès matériel obtenu)
 
-| Niveau | Pré-requis | Démonstration |
-|---|---|---|
-| **A — Vision (retenu, implémenté)** | Une image de la ligne laser | Traitement d'image → profil → profondeur → verdict |
-| **B — Bluetooth** | Connexion logiciel SCANDIAG OK | Réutiliser la chaîne d'acquisition existante sur un pneu vélo |
-| **C — Carte** | Ouverture + points de debug | UART/SWD identifiés, faisabilité firmware alternatif |
+| Niveau | Pré-requis | État | Démonstration |
+|---|---|---|---|
+| **A — Vision (retenu, implémenté)** | Une image de la ligne laser | ✅ développé et exécuté | Traitement d'image → profil → profondeur → verdict |
+| **B — Série / Bluetooth** | Dialoguer avec l'outil | 🟡 voie identifiée | Parler à l'outil via **USB-série (FT232RQ)** ou **SPP (WT12, 115200)** et réutiliser son acquisition |
+| **C — Carte / firmware** | Ouverture + points de flash | 🟡 produit ouvert, MCU connu | **STM32F429 reflashable** (SWD ou bootloader série) → firmware alternatif réaliste |
 
-Le **niveau A est celui que nous avons développé et qui s'exécute** : il prouve le principe **sans dépendre du firmware propriétaire** ni ouvrir le produit. Les niveaux B et C sont des extensions documentées.
+Le **niveau A est celui que nous avons développé et qui s'exécute** : il prouve le principe **sans dépendre du firmware propriétaire**. L'**ouverture du produit** (§3.2) fait passer les niveaux B et C de « théoriques » à « amorcés » : la voie série (FT232RQ/WT12) et le MCU reflashable (STM32F429) sont désormais **identifiés**, ce qui les rend démontrables dans une itération suivante.
 
 ### 8.3 Principe du niveau A (triangulation appliquée)
 
@@ -388,10 +397,22 @@ rebike-poc/
 Lancement : `pip install numpy pillow` puis `python main.py` (mode démo) ou
 `python main.py photo.jpg --calibration 0.05` (vraie photo). Voir §8.4 pour la sortie.
 
-### Annexe 2 — Datasheets (piste d'extension, non incluses)
+### Annexe 2 — Datasheets des composants clés
 
-Nous avons fait le choix de **ne pas ouvrir le produit** ; les références physiques des
-composants ne sont donc pas relevées et aucune datasheet n'est jointe. Ce serait l'objet
-d'une extension (niveau C) : relever les références sur la carte, puis récupérer les
-datasheets du MCU/SoC, du module Bluetooth, du capteur CMOS, du driver laser et du circuit
-de charge. La rétro-ingénierie **fonctionnelle** (§3.2) suffit au concept retenu.
+Après ouverture (§3.2), les références ont été relevées et les datasheets officielles
+collectées dans le dossier [`datasheets/`](datasheets/) :
+
+| Composant | Référence | Fichier |
+|---|---|---|
+| MCU | STMicroelectronics STM32F429 | `MCU_STM32F429.pdf` |
+| SDRAM | ISSI IS42S16400J-6BLI | `SDRAM_ISSI_IS42S16400J.pdf` |
+| Caméra | OmniVision OV9712 (`JAL-KM1-OV9712`) | `CAM_OmniVision_OV9712.pdf` |
+| Bluetooth | Silicon Labs / Bluegiga WT12-A | `BT_Bluegiga_WT12.pdf` + `BT_iWRAP_User_Guide.pdf` |
+| USB↔série | FTDI FT232RQ | `USB_FTDI_FT232RQ.pdf` |
+| Batterie | EEMB LP602248 (LiPo 3,7 V / 620 mAh) | `BAT_EEMB_LP602248.pdf` |
+| Laser | module vert 510–530 nm classe 3R | fiche IEC 60825-1 |
+
+*À confirmer à la loupe puis à ajouter :* la mémoire externe `9CA15 / RB151` (probable
+flash NAND/NOR) et le composant ON Semiconductor `RM R934`. L'analyse matérielle détaillée
+(comparaison hypothèses/réalité, schéma vérifié, implications POC) figure dans
+[`concours_natio_flo.md`](concours_natio_flo.md) (Annexe B).
