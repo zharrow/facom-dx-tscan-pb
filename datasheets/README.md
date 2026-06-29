@@ -1,23 +1,30 @@
 # Datasheets des composants clés
 
-Composants **identifiés au teardown** (photos `images_facom/interieur/`). Déposer ici les
-**datasheets officielles** (PDF). Nommage : `FONCTION_REFERENCE.pdf`.
+Composants **identifiés au teardown** (photos `../images_facom/interieur/`, nomenclature
+au §3.2 du dossier). Ci-dessous les **liens officiels** vers les fiches techniques.
 
-## À télécharger (références vérifiées)
+> Pour archiver les PDF en local, télécharger chaque fichier depuis le lien et l'enregistrer
+> ici en respectant le nommage `FONCTION_REFERENCE.pdf`.
 
-- [ ] **MCU** — `MCU_STM32F429.pdf` — STMicroelectronics STM32F429 (Cortex-M4, DCMI, FMC)
-- [ ] **SDRAM** — `SDRAM_ISSI_IS42S16400J.pdf` — ISSI IS42S16400J-6BLI (64 Mbit)
-- [ ] **Caméra** — `CAM_OmniVision_OV9712.pdf` — module `JAL-KM1-OV9712 V4.0` (WXGA 1 Mpx)
-- [ ] **Bluetooth** — `BT_Bluegiga_WT12.pdf` — Silicon Labs / Bluegiga WT12-A (BT 2.1, SPP)
-- [ ] **Bluetooth (firmware)** — `BT_iWRAP_User_Guide.pdf` — guide des commandes iWRAP
-- [ ] **USB↔série** — `USB_FTDI_FT232RQ.pdf` — FTDI FT232RQ
-- [ ] **Batterie** — `BAT_EEMB_LP602248.pdf` — EEMB LP602248 (LiPo 3,7 V / 620 mAh)
-- [ ] **Laser** — fiche/IEC du module laser vert 510–530 nm classe 3R (IEC 60825-1:2014)
+| Composant | Référence | Datasheet officielle |
+|---|---|---|
+| **MCU** | STMicroelectronics STM32F429 | <https://www.st.com/resource/en/datasheet/stm32f429zi.pdf> |
+| **SDRAM** | ISSI IS42S16400J-6BLI (64 Mbit) | <https://www.issi.com/WW/pdf/42-45S16400J.pdf> |
+| **Caméra** | OmniVision OV9712 (module `JAL-KM1-OV9712`) | <https://www.ovt.com/products/ov09712/> |
+| **Bluetooth** | Silicon Labs / Bluegiga WT12 | <https://www.silabs.com/documents/public/data-sheets/WT12-DataSheet.pdf> |
+| **Bluetooth (firmware)** | iWRAP (commandes AT) | <https://www.silabs.com/documents/public/user-guides/UG215-iWRAP-User-Guide.pdf> |
+| **USB↔série** | FTDI FT232RQ | <https://ftdichip.com/wp-content/uploads/2020/08/DS_FT232R.pdf> |
+| **Batterie** | EEMB LP602248 (LiPo 3,7 V / 620 mAh) | <https://www.eemb.com/battery/lithium-polymer-battery/LP602248.html> |
+| **Laser (sécurité)** | classe 3R, 510–530 nm | IEC 60825-1:2014 (norme sécurité laser) |
 
-## À identifier (loupe) puis ajouter
-- [ ] Mémoire externe `9CA15 / RB151` (logo en vague) — probable flash NAND/NOR
-- [ ] `ON RM R934` (ON Semiconductor) — régulateur / load-switch / driver
-- [ ] Régulateurs / LDO secondaires (rails caméra 2,8 / 1,8 / 1,5 V)
+## À identifier à la loupe (puis ajouter)
 
-> Procédure : relever la sérigraphie → datasheet sur le site fabricant → enregistrer ici →
-> tableau §4 du `DOSSIER_FINAL_FACOM.md` et Annexe B du `concours_natio_flo.md` déjà à jour.
+- Mémoire externe `9CA15 / RB151` (logo en vague) — probable flash NAND/NOR.
+- `ON RM R934` (ON Semiconductor) — régulateur / load-switch / driver.
+- Régulateurs / LDO secondaires (rails caméra 2,8 / 1,8 / 1,5 V).
+
+## Note OEM
+
+Le SCANDIAG® est une version **rebrandée du TEXA *Laser Examiner*** (TEXA S.p.A., Italie).
+La documentation TEXA est une source complémentaire utile :
+<https://www.texa.com/products/laser-examiner-2/>

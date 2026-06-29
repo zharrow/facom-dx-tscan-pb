@@ -6,7 +6,7 @@
 
 ### Présentation de l'équipe
 
-- **Campus :** [Ville] Ynov Campus
+- **Campus :** Toulouse Ynov Campus
 - **Classe :** [B3 / M1 / M2]
 
 | Nom / Prénom | Classe | Rôle |
@@ -40,7 +40,7 @@ Le kit se présente dans une mallette rigide FACOM. Référence produit relevée
 
 | Mallette fermée (étiquette produit) | Mallette ouverte | Kit complet |
 |---|---|---|
-| ![Étiquette DX.TSCANPB](images_facom/image-1782716335617.jpg) | ![Mallette ouverte](images_facom/image-1782716329368.jpg) | ![Kit complet](images_facom/image-1782716346312.jpg) |
+| ![Étiquette DX.TSCANPB](images_facom/boitier/image-1782716335617.jpg) | ![Mallette ouverte](images_facom/boitier/image-1782716329368.jpg) | ![Kit complet](images_facom/boitier/image-1782716346312.jpg) |
 
 **Contenu observé du kit** (photo de droite) : l'appareil SCANDIAG® dans sa mousse, le chargeur secteur, la clé USB (logiciel + documentation), l'adaptateur magnétique circulaire de vérification, et la notice (pictogrammes de danger laser visibles). L'appareil est portable, ergonomique, robuste, et muni d'un bouton de commande unique (marqué **MEASURE**) et d'une zone optique à son extrémité.
 
@@ -399,20 +399,23 @@ Lancement : `pip install numpy pillow` puis `python main.py` (mode démo) ou
 
 ### Annexe 2 — Datasheets des composants clés
 
-Après ouverture (§3.2), les références ont été relevées et les datasheets officielles
-collectées dans le dossier [`datasheets/`](datasheets/) :
+Après ouverture (§3.2), les références ont été relevées. L'index des **datasheets officielles**
+(liens) est dans [`datasheets/`](datasheets/) :
 
-| Composant | Référence | Fichier |
+| Composant | Référence | Datasheet |
 |---|---|---|
-| MCU | STMicroelectronics STM32F429 | `MCU_STM32F429.pdf` |
-| SDRAM | ISSI IS42S16400J-6BLI | `SDRAM_ISSI_IS42S16400J.pdf` |
-| Caméra | OmniVision OV9712 (`JAL-KM1-OV9712`) | `CAM_OmniVision_OV9712.pdf` |
-| Bluetooth | Silicon Labs / Bluegiga WT12-A | `BT_Bluegiga_WT12.pdf` + `BT_iWRAP_User_Guide.pdf` |
-| USB↔série | FTDI FT232RQ | `USB_FTDI_FT232RQ.pdf` |
-| Batterie | EEMB LP602248 (LiPo 3,7 V / 620 mAh) | `BAT_EEMB_LP602248.pdf` |
-| Laser | module vert 510–530 nm classe 3R | fiche IEC 60825-1 |
+| MCU | STMicroelectronics STM32F429 | [st.com](https://www.st.com/resource/en/datasheet/stm32f429zi.pdf) |
+| SDRAM | ISSI IS42S16400J-6BLI | [issi.com](https://www.issi.com/WW/pdf/42-45S16400J.pdf) |
+| Caméra | OmniVision OV9712 (`JAL-KM1-OV9712`) | [ovt.com](https://www.ovt.com/products/ov09712/) |
+| Bluetooth | Silicon Labs / Bluegiga WT12 | [WT12](https://www.silabs.com/documents/public/data-sheets/WT12-DataSheet.pdf) · [iWRAP](https://www.silabs.com/documents/public/user-guides/UG215-iWRAP-User-Guide.pdf) |
+| USB↔série | FTDI FT232RQ | [ftdichip.com](https://ftdichip.com/wp-content/uploads/2020/08/DS_FT232R.pdf) |
+| Batterie | EEMB LP602248 (LiPo 3,7 V / 620 mAh) | [eemb.com](https://www.eemb.com/battery/lithium-polymer-battery/LP602248.html) |
+| Laser | module vert 510–530 nm classe 3R | IEC 60825-1:2014 |
 
-*À confirmer à la loupe puis à ajouter :* la mémoire externe `9CA15 / RB151` (probable
-flash NAND/NOR) et le composant ON Semiconductor `RM R934`. L'analyse matérielle détaillée
-(comparaison hypothèses/réalité, schéma vérifié, implications POC) figure dans
-[`concours_natio_flo.md`](concours_natio_flo.md) (Annexe B).
+*Restent à confirmer à la loupe :* la mémoire externe `9CA15 / RB151` (probable flash NAND/NOR)
+et le composant ON Semiconductor `RM R934`.
+
+> **Note OEM :** la recherche en ligne indique que le SCANDIAG® est une version **rebrandée du
+> TEXA *Laser Examiner*** (TEXA S.p.A., Italie — cohérent avec le « Made in Italy »). Fonction,
+> principe (laser + caméra + triangulation), connectivité Bluetooth et autonomie (~500 mesures)
+> sont identiques. La documentation TEXA constitue donc une référence complémentaire exploitable.
